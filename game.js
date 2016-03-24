@@ -155,9 +155,9 @@ PS.init = function( system, options ) {
 
 	PS.gridSize( DRAW.WIDTH, DRAW.HEIGHT );
 	PS.border(PS.ALL, PS.ALL, 0);
-	lastx = DRAW.WIDTH - 1;
+	lastx = DRAW.WIDTH -1;
 	lasty = DRAW.BOTTOM_ROW;
-	for (i = 0; i < lastx; i += 1)
+	for (i = 0; i < lastx+1; i += 1)
 	{
 		PS.color(i, lasty, 0x778899);
 	}
