@@ -68,8 +68,8 @@ var DRAW = {
 			var i, pos_x, pos_y, result, y_below, pos;
 			for (i = SHAPE.coord.length-1; i > -1; i -= 1)
 			{
-				pos_x = parseInt(SHAPE.coord[i][0]);
-				pos_y = parseInt(SHAPE.coord[i][1]);
+				pos_x = parseInt(SHAPE.coord[i].x_pos);
+				pos_y = parseInt(SHAPE.coord[i].y_pos);
 				y_below = pos_y + 1; 
 				result = PS.unmakeRGB(PS.color(pos_x, y_below), {});
 				if (result.r == 255 && result.g == 255 && result.b == 255)
@@ -78,9 +78,12 @@ var DRAW = {
 				}
 				else
 				{
-					pos = [pos_x, pos_y];
+					pos = {
+						x_pos: pos_x, 
+						y_pos: pos_y
+						};
 					SHAPE.updated.push(pos);
-					PS.debug("Not-white below    ");
+					//PS.debug("Not-white below    ");
 				}
 			}
 			SHAPE.coord = [];
@@ -97,8 +100,8 @@ var DRAW = {
 			var i, pos_x, pos_y, result, y_below, pos;
 			for (i = SHAPE.updated.length-1; i > -1; i -= 1)
 			{
-				pos_x = parseInt(SHAPE.updated[i][0]);
-				pos_y = parseInt(SHAPE.updated[i][1]);
+				pos_x = parseInt(SHAPE.updated[i].x_pos);
+				pos_y = parseInt(SHAPE.updated[i].y_pos);
 				y_below = pos_y + 1; 
 				result = PS.unmakeRGB(PS.color(pos_x, y_below), {});
 				if (result.r == 255 && result.g == 255 && result.b == 255)
@@ -107,9 +110,12 @@ var DRAW = {
 				}
 				else
 				{
-					pos = [pos_x, pos_y];
+					pos = {
+						x_pos: pos_x, 
+						y_pos: pos_y
+						};
 					SHAPE.coord.push(pos);
-					PS.debug("Not-white below    ");
+					//PS.debug("Not-white below    ");
 				}
 			}
 			SHAPE.updated = [];
@@ -181,7 +187,9 @@ PS.init = function( system, options ) {
 
 PS.touch = function( x, y, data, options ) {
 	"use strict";
-	var pos = [x, y];
+	var pos = {
+		x_pos: x, 
+		y_pos: y };
 	if ( y < DRAW.BOTTOM_ROW)
 	{
 		DRAW.dragging = true;
@@ -210,8 +218,8 @@ PS.release = function( x, y, data, options ) {
 
 	// Add code here for when the mouse button/touch is released over a bead
 	DRAW.dragging = false;
+	
 	DRAW.analyze();
-	SHAPE.coord = [];
 };
 
 // PS.enter ( x, y, button, data, options )
@@ -224,7 +232,10 @@ PS.release = function( x, y, data, options ) {
 
 PS.enter = function( x, y, data, options ) {
 	"use strict";
-	var pos = [x, y];
+	var pos = {
+		x_pos: x, 
+		y_pos: y };
+	var alreadyIn = false;
 	DRAW.moving = false;
 	// Uncomment the following line to inspect parameters
 	// PS.debug( "PS.enter() @ " + x + ", " + y + "\n" );
@@ -237,7 +248,17 @@ PS.enter = function( x, y, data, options ) {
 		if (DRAW.dragging)
 		{
 			DRAW.underColor = DRAW.color;
-			SHAPE.coord.push(pos);
+			for (var i = 0, len = SHAPE.coord.length; i < len; i++)
+			{
+				if (parseInt(SHAPE.coord[i].x_pos) == parseInt(x) && parseInt(SHAPE.coord[i].y_pos) == parseInt(y))
+				{
+					alreadyIn = true;
+					break;
+				}
+			}
+			if (!alreadyIn) {
+				SHAPE.coord.push(pos);
+			}
 		}
 	}
 	else
