@@ -70,21 +70,20 @@ var DRAW = {
 			{
 				pos_x = parseInt(SHAPE.coord[i].x_pos);
 				pos_y = parseInt(SHAPE.coord[i].y_pos);
-				y_below = pos_y + 1; 
-				result = PS.unmakeRGB(PS.color(pos_x, y_below), {});
-				if (result.r == 255 && result.g == 255 && result.b == 255)
-				{
-					DRAW.move(pos_x, pos_y);
-				}
-				else
-				{
-					pos = {
-						x_pos: pos_x, 
-						y_pos: pos_y
-						};
-					SHAPE.updated.push(pos);
-					//PS.debug("Not-white below    ");
-				}
+					y_below = pos_y + 1; 
+					result = PS.unmakeRGB(PS.color(pos_x, y_below), {});
+					if (result.r == 255 && result.g == 255 && result.b == 255)
+					{
+						DRAW.move(pos_x, pos_y);
+					}
+					else
+					{
+						pos = {
+							x_pos: pos_x, 
+							y_pos: pos_y
+							};
+						SHAPE.updated.push(pos);
+					}
 			}
 			SHAPE.coord = [];
 			DRAW.reanalyze();
@@ -122,7 +121,7 @@ var DRAW = {
 			DRAW.analyze();
 		}
 		else {
-				
+			
 		}
 	},
 	
@@ -142,7 +141,27 @@ var DRAW = {
 		}
 		PS.color(x, y, PS.COLOR_WHITE);
 		DRAW.moving = true;	
-	}
+	},
+	
+	canMoveDown : function (x, y) {
+		var numOfWhites = 0;
+		for (var i = y-1; i < 16; i++)
+		{
+			result = PS.unmakeRGB(PS.color(x, i), {});
+			if (result.r == 255 && result.g == 255 && result.b == 255)
+			{
+				numOfWhites += 1;
+			}
+		}
+		if (numOfWhites > 0)
+		{
+			return true;
+		}
+		else 
+		{
+			return false;
+		}
+	},
 };
 
 var SHAPE = {
@@ -193,9 +212,12 @@ PS.touch = function( x, y, data, options ) {
 	if ( y < DRAW.BOTTOM_ROW)
 	{
 		DRAW.dragging = true;
-		DRAW.underColor = DRAW.color;
-		PS.color(x, y, DRAW.color);
-		SHAPE.coord.push(pos);
+		if (DRAW.underColor == PS.COLOR_WHITE)
+		{
+			DRAW.underColor = DRAW.color;
+			PS.color(x, y, DRAW.color);
+			SHAPE.coord.push(pos);
+		}
 	}
 	// Uncomment the following line to inspect parameters
 	// PS.debug( "PS.touch() @ " + x + ", " + y + "\n" );
@@ -218,7 +240,7 @@ PS.release = function( x, y, data, options ) {
 
 	// Add code here for when the mouse button/touch is released over a bead
 	DRAW.dragging = false;
-	
+
 	DRAW.analyze();
 };
 
