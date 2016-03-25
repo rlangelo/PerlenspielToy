@@ -49,6 +49,7 @@ var DRAW = {
 	underColor: PS.COLOR_WHITE,
 	dragging: false,
 	moving: false,
+	sound: 1,
 	
 	clean : function () {
 		"use strict";
@@ -134,7 +135,7 @@ var DRAW = {
 		result = PS.unmakeRGB(PS.color(x, y_below), {});
 		while (result.r == 255 && result.g == 255 && result.b == 255)
 		{
-			PS.color(x, y_below, PS.COLOR_BLACK);
+			PS.color(x, y_below, DRAW.color);
 			PS.color(x, y_above, PS.COLOR_WHITE);
 			y_below += 1;
 			y_above = y_below - 1;
@@ -142,7 +143,106 @@ var DRAW = {
 		}
 		PS.color(x, y, PS.COLOR_WHITE);
 		DRAW.moving = true;	
-	}
+	},
+
+	upSound : function(){
+		"use strict";
+		DRAW.sound += 1;
+		if (DRAW.sound > 9) {
+		    DRAW.sound = 1;
+		}
+		PS.glyph(13, DRAW.BOTTOM_ROW, DRAW.sound.toString());
+	},
+
+	downSound : function(){
+		"use strict";
+		DRAW.sound -= 1;
+		if (DRAW.sound < 1) {
+		    DRAW.sound = 9;
+		}
+		PS.glyph(13, DRAW.BOTTOM_ROW, DRAW.sound.toString());
+	},
+
+    downRed : function(){
+        var result, newRed;
+        result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
+        newRed = result.r - 5;
+        if (newRed < 0)
+        {
+            newRed = 0;
+        }
+        for (i = 9; i < 12; i += 1) {
+            PS.color(i, DRAW.BOTTOM_ROW, newRed, PS.CURRENT, PS.CURRENT);
+        }
+        DRAW.color = PS.color(10, DRAW.BOTTOM_ROW);
+    },
+
+    upRed : function(){
+    var result, newRed;
+    result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
+    newRed = result.r + 5;
+    if (newRed > 255)
+    {
+        newRed = 255;
+    }
+    for (i = 9; i < 12; i += 1) {
+        PS.color(i, DRAW.BOTTOM_ROW, newRed, PS.CURRENT, PS.CURRENT);
+    }
+    DRAW.color = PS.color(10, DRAW.BOTTOM_ROW);
+    },
+
+    downGreen: function () {
+        var result, newGreen;
+        result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
+        newGreen = result.g - 5;
+        if (newGreen < 0) {
+            newGreen = 0;
+        }
+        for (i = 9; i < 12; i += 1) {
+            PS.color(i, DRAW.BOTTOM_ROW, PS.CURRENT, newGreen, PS.CURRENT);
+        }
+        DRAW.color = PS.color(10, DRAW.BOTTOM_ROW);
+    },
+
+    upGreen: function () {
+        var result, newGreen;
+        result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
+        newGreen = result.g + 5;
+        if (newGreen > 255) {
+            newGreen = 255;
+        }
+        for (i = 9; i < 12; i += 1) {
+            PS.color(i, DRAW.BOTTOM_ROW, PS.CURRENT, newGreen, PS.CURRENT);
+        }
+        DRAW.color = PS.color(10, DRAW.BOTTOM_ROW);
+    },
+
+    downBlue: function () {
+        var result, newBlue;
+        result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
+        newBlue = result.b - 5;
+        if (newBlue < 0) {
+            newBlue = 0;
+        }
+        for (i = 9; i < 12; i += 1) {
+            PS.color(i, DRAW.BOTTOM_ROW, PS.CURRENT, PS.CURRENT, newBlue);
+        }
+        DRAW.color = PS.color(10, DRAW.BOTTOM_ROW);
+    },
+
+    upBlue: function () {
+        var result, newBlue;
+        result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
+        newBlue = result.b + 5;
+        if (newBlue > 255) {
+            newBlue = 255;
+        }
+        for (i = 9; i < 12; i += 1) {
+            PS.color(i, DRAW.BOTTOM_ROW, PS.CURRENT, PS.CURRENT, newBlue);
+        }
+        DRAW.color = PS.color(10, DRAW.BOTTOM_ROW);
+    }
+
 };
 
 var SHAPE = {
@@ -168,10 +268,59 @@ PS.init = function( system, options ) {
 		PS.color(i, lasty, 0x778899);
 	}
 	DRAW.RESET_X = lastx;
+	PS.glyphColor(0, lasty, PS.COLOR_BLACK);
+	PS.glyph(0, lasty, "<");
+	PS.exec(0, lasty, DRAW.downRed);
+
+	PS.glyphColor(1, lasty, PS.COLOR_RED);
+	PS.glyph(1, lasty, "R");
+
+	PS.glyphColor(2, lasty, PS.COLOR_BLACK);
+	PS.glyph(2, lasty, ">");
+	PS.exec(2, lasty, DRAW.upRed);
+
+	PS.glyphColor(3, lasty, PS.COLOR_BLACK);
+	PS.glyph(3, lasty, "<");
+	PS.exec(3, lasty, DRAW.downGreen);
+
+	PS.glyphColor(4, lasty, PS.COLOR_GREEN);
+	PS.glyph(4, lasty, "G");
+
+	PS.glyphColor(5, lasty, PS.COLOR_BLACK);
+	PS.glyph(5, lasty, ">");
+	PS.exec(5, lasty, DRAW.upGreen);
+
+	PS.glyphColor(6, lasty, PS.COLOR_BLACK);
+	PS.glyph(6, lasty, "<");
+	PS.exec(6, lasty, DRAW.downBlue);
+
+	PS.glyphColor(7, lasty, PS.COLOR_BLUE);
+	PS.glyph(7, lasty, "B");
+
+	PS.glyphColor(8, lasty, PS.COLOR_BLACK);
+	PS.glyph(8, lasty, ">");
+	PS.exec(8, lasty, DRAW.upBlue);
+
+	for (i=9; i < 12; i +=1)
+	{
+		PS.color(i, lasty, DRAW.color);
+	}
+
+	PS.glyphColor(12, lasty, PS.COLOR_BLACK);
+	PS.glyph(12,lasty, "<");
+	PS.exec(12, lasty, DRAW.downSound);
+
+	PS.glyphColor(13, lasty, PS.COLOR_BLACK);
+	PS.glyph(13,lasty, DRAW.sound.toString());
+
+	PS.glyphColor(14, lasty, PS.COLOR_BLACK);
+	PS.glyph(14,lasty, ">");
+	PS.exec(14, lasty, DRAW.upSound);
+
 	PS.glyphColor(lastx, lasty, PS.COLOR_BLACK);
 	PS.glyph(lastx, lasty, "X");
 	PS.exec(lastx, lasty, DRAW.clean);
-	
+
 	DRAW.clean();
 	
 	// Add any other initialization code you need here
@@ -197,8 +346,9 @@ PS.touch = function( x, y, data, options ) {
 		PS.color(x, y, DRAW.color);
 		SHAPE.coord.push(pos);
 	}
+
 	// Uncomment the following line to inspect parameters
-	// PS.debug( "PS.touch() @ " + x + ", " + y + "\n" );
+	//PS.debug( "PS.touch() @ " + x + ", " + y + "\n" );
 
 	// Add code here for mouse clicks/touches over a bead
 };
@@ -218,7 +368,40 @@ PS.release = function( x, y, data, options ) {
 
 	// Add code here for when the mouse button/touch is released over a bead
 	DRAW.dragging = false;
-	
+	if (y != DRAW.BOTTOM_ROW) {
+	    switch (DRAW.sound) {
+	        case 1:
+	            PS.audioPlay("fx_click");
+	            break;
+	        case 2:
+	            PS.audioPlay("fx_bang");
+	            break;
+	        case 3:
+	            PS.audioPlay("fx_ding");
+	            break;
+	        case 4:
+	            PS.audioPlay("fx_bucket");
+	            break;
+	        case 5:
+	            PS.audioPlay("fx_drip1");
+	            break;
+	        case 6:
+	            PS.audioPlay("fx_squawk");
+	            break;
+	        case 7:
+	            PS.audioPlay("fx_whistle");
+	            break;
+	        case 8:
+	            PS.audioPlay("fx_tada");
+	            break;
+	        case 9:
+	            PS.audioPlay("fx_wilhelm");
+	            break;
+	        default:
+	            break;
+	    }
+	}
+
 	DRAW.analyze();
 };
 
