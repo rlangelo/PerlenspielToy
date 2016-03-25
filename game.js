@@ -50,7 +50,7 @@ var DRAW = {
 	dragging: false,
 	moving: false,
 	sound: 1,
-	limit: 16,
+	limit: 32,
 	
 	clean : function () {
 		"use strict";
@@ -64,19 +64,21 @@ var DRAW = {
 		}
 		SHAPE.coord = [];
 		SHAPE.updated = [];
+		SHAPE.sorted = [];
+		SHAPE.heightArr = [];
 	},
 	
 	analyze : function () {
 		DRAW.limit -= 1;
 		if (DRAW.limit > 0)
 		{
-		if (SHAPE.coord.length > 0)
+		if (SHAPE.sorted.length > 0)
 		{
 			var i, pos_x, pos_y, result, y_below, pos;
-			for (i = SHAPE.coord.length-1; i > -1; i -= 1)
+			for (i = SHAPE.sorted.length-1; i > -1; i -= 1)
 			{
-				pos_x = parseInt(SHAPE.coord[i].x_pos);
-				pos_y = parseInt(SHAPE.coord[i].y_pos);
+				pos_x = parseInt(SHAPE.sorted[i].x_pos);
+				pos_y = parseInt(SHAPE.sorted[i].y_pos);
 					y_below = pos_y + 1; 
 					result = PS.unmakeRGB(PS.color(pos_x, y_below), {});
 					if (result.r == 255 && result.g == 255 && result.b == 255)
@@ -92,7 +94,7 @@ var DRAW = {
 						SHAPE.updated.push(pos);
 					}
 			}
-			SHAPE.coord = [];
+			SHAPE.sorted = [];
 			DRAW.reanalyze();
 		}
 		else {
@@ -100,7 +102,7 @@ var DRAW = {
 		}
 		}
 		else {
-			DRAW.limit = 16;
+			DRAW.limit = 32;
 		}
 	},
 	
@@ -127,7 +129,7 @@ var DRAW = {
 						x_pos: pos_x, 
 						y_pos: pos_y
 						};
-					SHAPE.coord.push(pos);
+					SHAPE.sorted.push(pos);
 					//PS.debug("Not-white below    ");
 				}
 			}
@@ -139,14 +141,37 @@ var DRAW = {
 		}
 		}
 		else {
-			DRAW.limit = 16;
+			DRAW.limit = 32;
+		}
+	},
+	
+	checkGrid : function () {
+		"use strict";
+		for (var i = 0; i<DRAW.HEIGHT-1;i++)
+		{
+			for (var j = 0; j<DRAW.WIDTH;j++)
+			{
+				var result = PS.unmakeRGB(PS.color(i, j), {});
+				if (result.r != 255 && result.g != 255 && result.b != 255)
+				{
+					var pos = {
+						x_pos: i, 
+						y_pos: j };
+					SHAPE.coord.push(pos);
+				}
+			}
+		}
+		if (SHAPE.coord.length > 0)
+		{
+			DRAW.sortByY();
+			DRAW.analyze();
 		}
 	},
 	
 	move : function (x, y) {
 		"use strict";
 		var y_below = parseInt(y) + 1;
-		var y_above = y_below -1;
+		var y_above = y_below - 1;
 		var result;
 		result = PS.unmakeRGB(PS.color(x, y_below), {});
 		while (result.r == 255 && result.g == 255 && result.b == 255)
@@ -259,25 +284,35 @@ var DRAW = {
         DRAW.color = PS.color(10, DRAW.BOTTOM_ROW);
     },
 
-
-	canMoveDown : function (x, y) {
-		var numOfWhites = 0;
-		for (var i = y-1; i < 16; i++)
+	compareFunction : function(a, b)
+	{
+		return b - a;
+	},
+	
+	sortByY : function() {
+		var len = SHAPE.coord.length;
+		for (var i = 0; i < len; i++)
 		{
-			result = PS.unmakeRGB(PS.color(x, i), {});
-			if (result.r == 255 && result.g == 255 && result.b == 255)
+			SHAPE.heightArr.push(SHAPE.coord[i].y_pos);
+		}
+		SHAPE.heightArr.sort(DRAW.compareFunction);
+		SHAPE.heightArr = SHAPE.heightArr.filter(function(elem, index, self) {
+			return index == self.indexOf(elem);
+		});
+		len = SHAPE.heightArr.length;
+		var seLen = SHAPE.coord.length;
+		for (var i = 0; i < len; i++)
+		{
+			for (var j = 0; j < seLen; j++)
 			{
-				numOfWhites += 1;
+				if (SHAPE.heightArr[i] == SHAPE.coord[j].y_pos)
+				{
+					SHAPE.sorted.push(SHAPE.coord[j]);
+				}
 			}
 		}
-		if (numOfWhites > 0)
-		{
-			return true;
-		}
-		else 
-		{
-			return false;
-		}
+		SHAPE.coord = [];
+		SHAPE.heightArr = [];
 	},
 
 };
@@ -285,6 +320,8 @@ var DRAW = {
 var SHAPE = {
 	coord: [],
 	updated: [],
+	heightArr: [],
+	sorted: [],
 };
 
 PS.init = function( system, options ) {
@@ -336,7 +373,7 @@ PS.init = function( system, options ) {
 
 	PS.glyphColor(8, lasty, PS.COLOR_BLACK);
 	PS.glyph(8, lasty, ">");
-	PS.exec(8, lasty, DRAW.upBlue);
+	//PS.exec(8, lasty, DRAW.upBlue);
 
 	for (i=9; i < 12; i +=1)
 	{
@@ -389,6 +426,12 @@ PS.touch = function( x, y, data, options ) {
 			}
 		}
 	}
+	else {
+		if (x == 8)
+		{
+			DRAW.upBlue();
+		}
+	}
 
 	// Uncomment the following line to inspect parameters
 	//PS.debug( "PS.touch() @ " + x + ", " + y + "\n" );
@@ -410,6 +453,7 @@ PS.release = function( x, y, data, options ) {
 	// PS.debug( "PS.release() @ " + x + ", " + y + "\n" );
 
 	// Add code here for when the mouse button/touch is released over a bead
+	DRAW.sortByY();
 	DRAW.dragging = false;
 	if (y != DRAW.BOTTOM_ROW) {
 	    switch (DRAW.sound) {
@@ -444,8 +488,11 @@ PS.release = function( x, y, data, options ) {
 	            break;
 	    }
 	}
-
 	DRAW.analyze();
+	DRAW.checkGrid();
+	DRAW.checkGrid();
+	DRAW.checkGrid();
+	DRAW.checkGrid();
 };
 
 // PS.enter ( x, y, button, data, options )
