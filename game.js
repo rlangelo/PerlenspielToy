@@ -50,6 +50,7 @@ var DRAW = {
 	dragging: false,
 	moving: false,
 	sound: 1,
+	limit: 16,
 	
 	clean : function () {
 		"use strict";
@@ -61,9 +62,14 @@ var DRAW = {
 		{
 			PS.color(PS.ALL, i, PS.COLOR_WHITE);
 		}
+		SHAPE.coord = [];
+		SHAPE.updated = [];
 	},
 	
 	analyze : function () {
+		DRAW.limit -= 1;
+		if (DRAW.limit > 0)
+		{
 		if (SHAPE.coord.length > 0)
 		{
 			var i, pos_x, pos_y, result, y_below, pos;
@@ -92,9 +98,16 @@ var DRAW = {
 		else {
 			
 		}
+		}
+		else {
+			DRAW.limit = 16;
+		}
 	},
 	
 	reanalyze : function () {
+		DRAW.limit -= 1;
+		if (DRAW.limit > 0)
+		{
 		if (SHAPE.updated.length > 0)
 		{
 			var i, pos_x, pos_y, result, y_below, pos;
@@ -123,6 +136,10 @@ var DRAW = {
 		}
 		else {
 			
+		}
+		}
+		else {
+			DRAW.limit = 16;
 		}
 	},
 	
@@ -366,7 +383,10 @@ PS.touch = function( x, y, data, options ) {
 		{
 			DRAW.underColor = DRAW.color;
 			PS.color(x, y, DRAW.color);
-			SHAPE.coord.push(pos);
+			if (y != DRAW.BOTTOM_ROW -1)
+			{
+				SHAPE.coord.push(pos);
+			}
 		}
 	}
 
@@ -463,7 +483,10 @@ PS.enter = function( x, y, data, options ) {
 				}
 			}
 			if (!alreadyIn) {
-				SHAPE.coord.push(pos);
+				if (y != DRAW.BOTTOM_ROW - 1)
+				{
+					SHAPE.coord.push(pos);
+				}
 			}
 		}
 	}
