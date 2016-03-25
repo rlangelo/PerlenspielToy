@@ -373,6 +373,7 @@ PS.init = function( system, options ) {
 	// Otherwise you will get the default 8x8 grid
 
 	PS.gridSize( DRAW.WIDTH, DRAW.HEIGHT );
+	PS.statusText("COLLAPSE");
 	PS.border(PS.ALL, PS.ALL, 0);
 	lastx = DRAW.WIDTH -1;
 	lasty = DRAW.BOTTOM_ROW;
