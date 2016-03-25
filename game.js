@@ -525,6 +525,39 @@ PS.keyDown = function( key, shift, ctrl, options ) {
 	//	PS.debug( "DOWN: key = " + key + ", shift = " + shift + "\n" );
 
 	// Add code here for when a key is pressed
+	switch(key)
+	{
+		case 49:
+			DRAW.sound = 1;
+			break;
+		case 50:
+			DRAW.sound = 2;
+			break;
+		case 51:
+			DRAW.sound = 3;
+			break;
+		case 52:
+			DRAW.sound = 4;
+			break;
+		case 53:
+			DRAW.sound = 5;
+			break;
+		case 54:
+			DRAW.sound = 6;
+			break;
+		case 55:
+			DRAW.sound = 7;
+			break;
+		case 56:
+			DRAW.sound = 8;
+			break;
+		case 57:
+			DRAW.sound = 9;
+			break;
+		default:
+			break;
+	}
+	PS.glyph(13, DRAW.BOTTOM_ROW, DRAW.sound.toString());
 };
 
 // PS.keyUp ( key, shift, ctrl, options )
