@@ -196,6 +196,7 @@ var DRAW = {
 		    DRAW.sound = 1;
 		}
 		PS.glyph(13, DRAW.BOTTOM_ROW, DRAW.sound.toString());
+		PS.audioPlay("fx_boop");
 	},
 
 	downSound : function(){
@@ -205,15 +206,17 @@ var DRAW = {
 		    DRAW.sound = 9;
 		}
 		PS.glyph(13, DRAW.BOTTOM_ROW, DRAW.sound.toString());
+		PS.audioPlay("fx_boop");
 	},
 
     downRed : function(){
         var result, newRed;
         result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
-        newRed = result.r - 5;
+        newRed = result.r - 10;
         if (newRed < 0)
         {
             newRed = 0;
+			PS.audioPlay("fx_tick");
         }
         for (i = 9; i < 12; i += 1) {
             PS.color(i, DRAW.BOTTOM_ROW, newRed, PS.CURRENT, PS.CURRENT);
@@ -224,10 +227,11 @@ var DRAW = {
     upRed : function(){
     var result, newRed;
     result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
-    newRed = result.r + 5;
+    newRed = result.r + 10;
     if (newRed > 200)
     {
         newRed = 200;
+		PS.audioPlay("fx_tick");
     }
     for (i = 9; i < 12; i += 1) {
         PS.color(i, DRAW.BOTTOM_ROW, newRed, PS.CURRENT, PS.CURRENT);
@@ -238,9 +242,11 @@ var DRAW = {
     downGreen: function () {
         var result, newGreen;
         result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
-        newGreen = result.g - 5;
-        if (newGreen < 0) {
+        newGreen = result.g - 10;
+        if (newGreen < 0)
+		{
             newGreen = 0;
+			PS.audioPlay("fx_tick");
         }
         for (i = 9; i < 12; i += 1) {
             PS.color(i, DRAW.BOTTOM_ROW, PS.CURRENT, newGreen, PS.CURRENT);
@@ -251,9 +257,11 @@ var DRAW = {
     upGreen: function () {
         var result, newGreen;
         result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
-        newGreen = result.g + 5;
-        if (newGreen > 200) {
+        newGreen = result.g + 10;
+        if (newGreen > 200)
+		{
             newGreen = 200;
+			PS.audioPlay("fx_tick");
         }
         for (i = 9; i < 12; i += 1) {
             PS.color(i, DRAW.BOTTOM_ROW, PS.CURRENT, newGreen, PS.CURRENT);
@@ -264,9 +272,11 @@ var DRAW = {
     downBlue: function () {
         var result, newBlue;
         result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
-        newBlue = result.b - 5;
-        if (newBlue < 0) {
+        newBlue = result.b - 10;
+        if (newBlue < 0)
+		{
             newBlue = 0;
+			PS.audioPlay("fx_tick");
         }
         for (i = 9; i < 12; i += 1) {
             PS.color(i, DRAW.BOTTOM_ROW, PS.CURRENT, PS.CURRENT, newBlue);
@@ -277,9 +287,11 @@ var DRAW = {
     upBlue: function () {
         var result, newBlue;
         result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
-        newBlue = result.b + 5;
-        if (newBlue > 200) {
+        newBlue = result.b + 10;
+        if (newBlue > 200)
+		{
             newBlue = 200;
+			PS.audioPlay("fx_tick");
         }
         for (i = 9; i < 12; i += 1) {
             PS.color(i, DRAW.BOTTOM_ROW, PS.CURRENT, PS.CURRENT, newBlue);
@@ -422,14 +434,14 @@ PS.init = function( system, options ) {
 
 	PS.glyphColor(12, lasty, PS.COLOR_BLACK);
 	PS.glyph(12,lasty, "<");
-	//PS.exec(12, lasty, DRAW.downSound);
+	PS.exec(12, lasty, DRAW.downSound);
 
 	PS.glyphColor(13, lasty, PS.COLOR_BLACK);
 	PS.glyph(13,lasty, DRAW.sound.toString());
 
 	PS.glyphColor(14, lasty, PS.COLOR_BLACK);
 	PS.glyph(14,lasty, ">");
-	//PS.exec(14, lasty, DRAW.upSound);
+	PS.exec(14, lasty, DRAW.upSound);
 
 	PS.glyphColor(lastx, lasty, PS.COLOR_BLACK);
 	PS.glyph(lastx, lasty, "X");
