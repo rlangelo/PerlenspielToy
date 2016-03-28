@@ -54,6 +54,12 @@ var DRAW = {
 	clicking: false,
 	myTimer: 0,
 	clickedX: -1,
+	isRedMin: true,
+	isBlueMin: true,
+	isGreenMin: true,
+	isRedMax: false,
+	isBlueMax: false,
+	isGreenMax: false,
 	
 	clean : function () {
 		"use strict";
@@ -211,12 +217,15 @@ var DRAW = {
 
     downRed : function(){
         var result, newRed;
+        var lasty = DRAW.BOTTOM_ROW;
         result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
         newRed = result.r - 10;
+        PS.glyph(2, lasty, ">");
         if (newRed < 0)
         {
-            newRed = 0;
-			PS.audioPlay("fx_tick");
+        	PS.glyph(0, lasty, "");
+         	newRed = 0;
+		PS.audioPlay("fx_uhoh");
         }
         for (i = 9; i < 12; i += 1) {
             PS.color(i, DRAW.BOTTOM_ROW, newRed, PS.CURRENT, PS.CURRENT);
@@ -225,28 +234,34 @@ var DRAW = {
     },
 
     upRed : function(){
-    var result, newRed;
-    result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
-    newRed = result.r + 10;
-    if (newRed > 200)
-    {
-        newRed = 200;
-		PS.audioPlay("fx_tick");
-    }
-    for (i = 9; i < 12; i += 1) {
-        PS.color(i, DRAW.BOTTOM_ROW, newRed, PS.CURRENT, PS.CURRENT);
-    }
-    DRAW.color = PS.color(10, DRAW.BOTTOM_ROW);
+    	var result, newRed;
+    	var lasty = DRAW.BOTTOM_ROW;
+    	result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
+    	newRed = result.r + 10;
+    	PS.glyph(0, lasty, "<");
+    	if (newRed > 200)
+    	{
+    		PS.glyph(2, lasty, "");
+        	newRed = 200;
+		PS.audioPlay("fx_uhoh");
+    	}
+    	for (i = 9; i < 12; i += 1) {
+        	PS.color(i, DRAW.BOTTOM_ROW, newRed, PS.CURRENT, PS.CURRENT);
+    	}
+    	DRAW.color = PS.color(10, DRAW.BOTTOM_ROW);
     },
 
     downGreen: function () {
         var result, newGreen;
+        var lasty = DRAW.BOTTOM_ROW;
         result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
+        PS.glyph(5, lasty, ">");
         newGreen = result.g - 10;
         if (newGreen < 0)
-		{
-            newGreen = 0;
-			PS.audioPlay("fx_tick");
+	{
+		PS.glyph(3, lasty, "");
+         	newGreen = 0;
+		PS.audioPlay("fx_uhoh");
         }
         for (i = 9; i < 12; i += 1) {
             PS.color(i, DRAW.BOTTOM_ROW, PS.CURRENT, newGreen, PS.CURRENT);
@@ -256,12 +271,15 @@ var DRAW = {
 
     upGreen: function () {
         var result, newGreen;
+        var lasty = DRAW.BOTTOM_ROW;
         result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
         newGreen = result.g + 10;
+        PS.glyph(3, lasty, "<");
         if (newGreen > 200)
-		{
-            newGreen = 200;
-			PS.audioPlay("fx_tick");
+	{
+		PS.glyph(5, lasty, "");
+        	newGreen = 200;
+		PS.audioPlay("fx_uhoh");
         }
         for (i = 9; i < 12; i += 1) {
             PS.color(i, DRAW.BOTTOM_ROW, PS.CURRENT, newGreen, PS.CURRENT);
@@ -271,12 +289,15 @@ var DRAW = {
 
     downBlue: function () {
         var result, newBlue;
+        var lasty = DRAW.BOTTOM_ROW;
         result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
         newBlue = result.b - 10;
+        PS.glyph(8, lasty, ">");
         if (newBlue < 0)
-		{
-            newBlue = 0;
-			PS.audioPlay("fx_tick");
+	{
+		PS.glyph(6, lasty, "");
+        	newBlue = 0;
+		PS.audioPlay("fx_uhoh");
         }
         for (i = 9; i < 12; i += 1) {
             PS.color(i, DRAW.BOTTOM_ROW, PS.CURRENT, PS.CURRENT, newBlue);
@@ -286,15 +307,18 @@ var DRAW = {
 
     upBlue: function () {
         var result, newBlue;
+        var lasty = DRAW.BOTTOM_ROW;
         result = PS.unmakeRGB(PS.color(10, DRAW.BOTTOM_ROW), {});
         newBlue = result.b + 10;
+        PS.glyph(6, lasty, "<");
         if (newBlue > 200)
-		{
-            newBlue = 200;
-			PS.audioPlay("fx_tick");
+	{
+		PS.glyph(8, lasty, "");
+            	newBlue = 200;
+		PS.audioPlay("fx_uhoh");
         }
         for (i = 9; i < 12; i += 1) {
-            PS.color(i, DRAW.BOTTOM_ROW, PS.CURRENT, PS.CURRENT, newBlue);
+        	PS.color(i, DRAW.BOTTOM_ROW, PS.CURRENT, PS.CURRENT, newBlue);
         }
         DRAW.color = PS.color(10, DRAW.BOTTOM_ROW);
     },
@@ -332,15 +356,7 @@ var DRAW = {
 		
 	checkClicks : function ()
 	{
-		if (DRAW.clickedX==8)
-		{
-			DRAW.upBlue();
-		}
-		else if (DRAW.clickedX == 6)
-		{
-			DRAW.downBlue();
-		}
-		else if (DRAW.clickedX == 0)
+		if (DRAW.clickedX == 0)
 		{
 			DRAW.downRed();
 		}
@@ -355,6 +371,14 @@ var DRAW = {
 		else if (DRAW.clickedX == 5)
 		{
 			DRAW.upGreen();
+		}
+		else if (DRAW.clickedX == 6)
+		{
+			DRAW.downBlue();
+		}
+		else if (DRAW.clickedX == 8)
+		{
+			DRAW.upBlue();
 		}
 		else if (DRAW.clickedX == 12)
 		{
@@ -395,36 +419,54 @@ PS.init = function( system, options ) {
 	}
 	DRAW.RESET_X = lastx;
 	PS.glyphColor(0, lasty, PS.COLOR_BLACK);
-	PS.glyph(0, lasty, "<");
+	if (!DRAW.isRedMin)
+	{
+		PS.glyph(0, lasty, "<");
+	}
 	//PS.exec(0, lasty, DRAW.downRed);
 
 	PS.glyphColor(1, lasty, PS.COLOR_RED);
 	PS.glyph(1, lasty, "R");
 
 	PS.glyphColor(2, lasty, PS.COLOR_BLACK);
-	PS.glyph(2, lasty, ">");
+	if (!DRAW.isRedMax)
+	{
+		PS.glyph(2, lasty, ">");
+	}
 	//PS.exec(2, lasty, DRAW.upRed);
 
 	PS.glyphColor(3, lasty, PS.COLOR_BLACK);
-	PS.glyph(3, lasty, "<");
+	if (!DRAW.isGreenMin)
+	{
+		PS.glyph(3, lasty, "<");
+	}
 	//PS.exec(3, lasty, DRAW.downGreen);
 
 	PS.glyphColor(4, lasty, PS.COLOR_GREEN);
 	PS.glyph(4, lasty, "G");
 
 	PS.glyphColor(5, lasty, PS.COLOR_BLACK);
-	PS.glyph(5, lasty, ">");
+	if (!DRAW.isGreenMax)
+	{
+		PS.glyph(5, lasty, ">");
+	}
 	//PS.exec(5, lasty, DRAW.upGreen);
 
 	PS.glyphColor(6, lasty, PS.COLOR_BLACK);
-	PS.glyph(6, lasty, "<");
+	if (!DRAW.isBlueMin)
+	{
+		PS.glyph(6, lasty, "<");
+	}
 	//PS.exec(6, lasty, DRAW.downBlue);
 
 	PS.glyphColor(7, lasty, PS.COLOR_BLUE);
 	PS.glyph(7, lasty, "B");
 
 	PS.glyphColor(8, lasty, PS.COLOR_BLACK);
-	PS.glyph(8, lasty, ">");
+	if (!DRAW.isBlueMax)
+	{
+		PS.glyph(8, lasty, ">");
+	}
 	//PS.exec(8, lasty, DRAW.upBlue);
 
 	for (i=9; i < 12; i +=1)
