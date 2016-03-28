@@ -60,13 +60,16 @@ var DRAW = {
 	isRedMax: false,
 	isBlueMax: false,
 	isGreenMax: false,
+	paintMode: false,
 	
 	clean : function () {
 		"use strict";
 		var i;
 		
 		DRAW.dragging = false;
+		DRAW.paintMode = false;
 		DRAW.underColor = PS.COLOR_WHITE;
+		PS.statusText("COLLAPSE");
 		for (i = 0; i < DRAW.BOTTOM_ROW; i += 1)
 		{
 			PS.color(PS.ALL, i, PS.COLOR_WHITE);
@@ -96,11 +99,14 @@ var DRAW = {
 					}
 					else
 					{
-						pos = {
-							x_pos: pos_x, 
-							y_pos: pos_y
-							};
-						SHAPE.updated.push(pos);
+						if (!DRAW.paintMode)
+						{
+							pos = {
+								x_pos: pos_x, 
+								y_pos: pos_y
+								};
+							SHAPE.updated.push(pos);
+						}
 					}
 			}
 			SHAPE.sorted = [];
@@ -139,7 +145,6 @@ var DRAW = {
 						y_pos: pos_y
 						};
 					SHAPE.sorted.push(pos);
-					//PS.debug("Not-white below    ");
 				}
 			}
 			SHAPE.updated = [];
@@ -170,7 +175,12 @@ var DRAW = {
 				}
 			}
 		}
-		if (SHAPE.coord.length > 0)
+		if (SHAPE.coord.length == 256)
+		{
+			PS.statusText("PAINT MODE!!");
+			DRAW.paintMode = true;
+		}
+		else if (SHAPE.coord.length > 0 && SHAPE.coord.length < 256)
 		{
 			DRAW.sortByY();
 			DRAW.analyze();
@@ -389,6 +399,58 @@ var DRAW = {
 			DRAW.upSound();
 		}
 	},		
+	
+	released : function( x, y)
+	{
+		DRAW.sortByY();
+		DRAW.dragging = false;
+		if (DRAW.myTimer != 0)
+		{
+			PS.timerStop(DRAW.myTimer);
+			DRAW.myTimer = 0;
+		}
+		if (y != DRAW.BOTTOM_ROW) {
+	 	   switch (DRAW.sound) {
+	 	       case 1:
+	 	           PS.audioPlay("fx_click");
+	  	          break;
+	   	     case 2:
+	                 PS.audioPlay("fx_bang");
+	   	         break;
+	       	 case 3:
+	      	      PS.audioPlay("fx_ding");
+	     	       break;
+	      	  case 4:
+	      	      PS.audioPlay("fx_bucket");
+	      	      break;
+	      	  case 5:
+	      	      PS.audioPlay("fx_drip1");
+	      	      break;
+	     	   case 6:
+	     	       PS.audioPlay("fx_squawk");
+	      	      break;
+	     	   case 7:
+	     	       PS.audioPlay("fx_whistle");
+	     	       break;
+	     	   case 8:
+	     	       PS.audioPlay("fx_tada");
+	      	      break;
+	     	   case 9:
+	      	      PS.audioPlay("fx_wilhelm");
+	     	       break;
+	     	   default:
+	     	       break;
+	    		}
+		}
+		DRAW.analyze();
+		if (!DRAW.paintMode)
+		{
+			DRAW.checkGrid();
+			DRAW.checkGrid();
+			DRAW.checkGrid();
+			DRAW.checkGrid();	
+		}
+	},
 
 };
 
@@ -423,7 +485,6 @@ PS.init = function( system, options ) {
 	{
 		PS.glyph(0, lasty, "<");
 	}
-	//PS.exec(0, lasty, DRAW.downRed);
 
 	PS.glyphColor(1, lasty, PS.COLOR_RED);
 	PS.glyph(1, lasty, "R");
@@ -433,14 +494,12 @@ PS.init = function( system, options ) {
 	{
 		PS.glyph(2, lasty, ">");
 	}
-	//PS.exec(2, lasty, DRAW.upRed);
 
 	PS.glyphColor(3, lasty, PS.COLOR_BLACK);
 	if (!DRAW.isGreenMin)
 	{
 		PS.glyph(3, lasty, "<");
 	}
-	//PS.exec(3, lasty, DRAW.downGreen);
 
 	PS.glyphColor(4, lasty, PS.COLOR_GREEN);
 	PS.glyph(4, lasty, "G");
@@ -450,14 +509,12 @@ PS.init = function( system, options ) {
 	{
 		PS.glyph(5, lasty, ">");
 	}
-	//PS.exec(5, lasty, DRAW.upGreen);
 
 	PS.glyphColor(6, lasty, PS.COLOR_BLACK);
 	if (!DRAW.isBlueMin)
 	{
 		PS.glyph(6, lasty, "<");
 	}
-	//PS.exec(6, lasty, DRAW.downBlue);
 
 	PS.glyphColor(7, lasty, PS.COLOR_BLUE);
 	PS.glyph(7, lasty, "B");
@@ -467,7 +524,6 @@ PS.init = function( system, options ) {
 	{
 		PS.glyph(8, lasty, ">");
 	}
-	//PS.exec(8, lasty, DRAW.upBlue);
 
 	for (i=9; i < 12; i +=1)
 	{
@@ -545,51 +601,7 @@ PS.release = function( x, y, data, options ) {
 	// PS.debug( "PS.release() @ " + x + ", " + y + "\n" );
 
 	// Add code here for when the mouse button/touch is released over a bead
-	DRAW.sortByY();
-	DRAW.dragging = false;
-	if (DRAW.myTimer != 0)
-	{
-		PS.timerStop(DRAW.myTimer);
-		DRAW.myTimer = 0;
-	}
-	if (y != DRAW.BOTTOM_ROW) {
-	    switch (DRAW.sound) {
-	        case 1:
-	            PS.audioPlay("fx_click");
-	            break;
-	        case 2:
-	            PS.audioPlay("fx_bang");
-	            break;
-	        case 3:
-	            PS.audioPlay("fx_ding");
-	            break;
-	        case 4:
-	            PS.audioPlay("fx_bucket");
-	            break;
-	        case 5:
-	            PS.audioPlay("fx_drip1");
-	            break;
-	        case 6:
-	            PS.audioPlay("fx_squawk");
-	            break;
-	        case 7:
-	            PS.audioPlay("fx_whistle");
-	            break;
-	        case 8:
-	            PS.audioPlay("fx_tada");
-	            break;
-	        case 9:
-	            PS.audioPlay("fx_wilhelm");
-	            break;
-	        default:
-	            break;
-	    }
-	}
-	DRAW.analyze();
-	DRAW.checkGrid();
-	DRAW.checkGrid();
-	DRAW.checkGrid();
-	DRAW.checkGrid();
+	DRAW.released(x, y);
 };
 
 // PS.enter ( x, y, button, data, options )
@@ -671,8 +683,12 @@ PS.exitGrid = function( options ) {
 
 	// Uncomment the following line to verify operation
 	// PS.debug( "PS.exitGrid() called\n" );
-
 	// Add code here for when the mouse cursor/touch moves off the grid
+	if (DRAW.dragging)
+	{
+		var len = SHAPE.coord.length;
+		DRAW.released(SHAPE.coord[len-1].x_pos, SHAPE.coord[len-1].y_pos);
+	}
 };
 
 // PS.keyDown ( key, shift, ctrl, options )
