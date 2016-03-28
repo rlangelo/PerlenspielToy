@@ -485,6 +485,7 @@ PS.init = function( system, options ) {
 	{
 		PS.glyph(0, lasty, "<");
 	}
+	PS.exec(0, lasty, DRAW.downRed);
 
 	PS.glyphColor(1, lasty, PS.COLOR_RED);
 	PS.glyph(1, lasty, "R");
@@ -494,12 +495,14 @@ PS.init = function( system, options ) {
 	{
 		PS.glyph(2, lasty, ">");
 	}
+	PS.exec(2, lasty, DRAW.upRed);
 
 	PS.glyphColor(3, lasty, PS.COLOR_BLACK);
 	if (!DRAW.isGreenMin)
 	{
 		PS.glyph(3, lasty, "<");
 	}
+	PS.exec(3, lasty, DRAW.downGreen);
 
 	PS.glyphColor(4, lasty, PS.COLOR_GREEN);
 	PS.glyph(4, lasty, "G");
@@ -509,12 +512,14 @@ PS.init = function( system, options ) {
 	{
 		PS.glyph(5, lasty, ">");
 	}
+	PS.exec(5, lasty, DRAW.upGreen);
 
 	PS.glyphColor(6, lasty, PS.COLOR_BLACK);
 	if (!DRAW.isBlueMin)
 	{
 		PS.glyph(6, lasty, "<");
 	}
+	PS.exec(6, lasty, DRAW.downBlue);
 
 	PS.glyphColor(7, lasty, PS.COLOR_BLUE);
 	PS.glyph(7, lasty, "B");
@@ -524,6 +529,7 @@ PS.init = function( system, options ) {
 	{
 		PS.glyph(8, lasty, ">");
 	}
+	PS.exec(8, lasty, DRAW.upBlue);
 
 	for (i=9; i < 12; i +=1)
 	{
