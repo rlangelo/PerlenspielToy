@@ -566,14 +566,11 @@ PS.touch = function( x, y, data, options ) {
 	if ( y < DRAW.BOTTOM_ROW)
 	{
 		DRAW.dragging = true;
-		if (DRAW.underColor == PS.COLOR_WHITE)
+		DRAW.underColor = DRAW.color;
+		PS.color(x, y, DRAW.color);
+		if (y != DRAW.BOTTOM_ROW -1)
 		{
-			DRAW.underColor = DRAW.color;
-			PS.color(x, y, DRAW.color);
-			if (y != DRAW.BOTTOM_ROW -1)
-			{
-				SHAPE.coord.push(pos);
-			}
+			SHAPE.coord.push(pos);
 		}
 	}
 	else {
